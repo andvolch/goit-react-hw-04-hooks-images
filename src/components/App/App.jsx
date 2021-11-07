@@ -33,6 +33,11 @@ export default function App() {
     toggleModal();
   };
 
+  const loadMore = () => {
+
+      setPage(state => state + 1);
+  };
+
   return (
       <div>
         <Searchbar
@@ -40,9 +45,10 @@ export default function App() {
         />
         <ImageGallery
           query={query}
-        page={page}
-        setPage={setPage}
+          page={page}
+          setPage={setPage}
           onImageClick={onImageClick}
+          loadMore={loadMore}
         />
         {showModal && (
             <Modal

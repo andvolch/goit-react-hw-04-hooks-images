@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 
 import s from './ImageGalleryItem.module.css';
 
-const ImageGalleryItem = ({ tags, webformatURL, largeImageURL, onClick }) => (
+const ImageGalleryItem = ({ tags, webformatURL, largeImageURL, onClick, }) => (
   <li className={s.imageGalleryItem}>
     <img
       src={webformatURL}

@@ -16,7 +16,7 @@ const Status = {
   REJECTED: 'rejected',
 };
 
-export default function ImageGallery({ query, page, setPage, onImageClick }) {
+export default function ImageGallery({ query, page, onImageClick, loadMore }) {
   
   const [images, setImages] = useState([]);
   
@@ -24,49 +24,50 @@ export default function ImageGallery({ query, page, setPage, onImageClick }) {
   const [status, setStatus] = useState(Status.IDLE);
 
   useEffect(() => {
-    if (query) {
-      setStatus(Status.PENDING);
-
-      getPicturesPixabayApi(query, page)
-        .then(({ data: { hits } }) => {
-          setImages(hits);
-          setStatus(Status.RESOLVED);
-          // setPage(1);
-          
-        })
-        .catch(error => {
-          setError(error);
-          setStatus(Status.REJECTED);
-        });
+    if (!query) {
+      return
     }
-    
-  }, [query, page]);
-
-  useEffect(() => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'smooth',
-    });
-  }, [images]);
-
-
-
-  const loadMore = () => {
-
-    let page = setPage(state => state + 1);
+    setStatus(Status.PENDING);
 
     getPicturesPixabayApi(query, page)
       .then(({ data: { hits } }) => {
-        setImages(prevState => [...prevState, ...hits]);
-    
+        setImages(hits);
         setStatus(Status.RESOLVED);
+        
+      })
+      .catch(error => {
+        setError(error);
+        setStatus(Status.REJECTED);
+      });
+    
+    if (page !== 1) {
+      setStatus(Status.PENDING);
+      getPicturesPixabayApi(query, page)
+      .then(({ data: { hits } }) => {
+        setImages(prevState => [...prevState, ...hits]);
+
+        setStatus(Status.RESOLVED);
+
+        
         
       })
       .catch(error => {
           setError(error);
           setStatus(Status.REJECTED);
         });
-  };
+      }
+    
+  }, [query, page]);
+
+  useEffect(() => {
+    if(page !==1) {
+      return 
+    };
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth',
+    });
+  }, [page]);
 
 
 
@@ -107,6 +108,7 @@ ImageGallery.propTypes = {
   query: PropTypes.string.isRequired,
 
   onImageClick: PropTypes.func.isRequired,
+  loadMore: PropTypes.func.isRequired,
 };
 
 
