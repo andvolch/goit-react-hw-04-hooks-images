@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -16,90 +16,92 @@ const Status = {
   REJECTED: 'rejected',
 };
 
-class ImageGallery extends Component {
-  state = {
-    images: [],
-    page: 1,
-    error: null,
-    status: Status.IDLE,
-  };
+export default function ImageGallery({ query, page, setPage, onImageClick }) {
+  
+  const [images, setImages] = useState([]);
+  
+  const [error, setError] = useState(null);
+  const [status, setStatus] = useState(Status.IDLE);
 
-  componentDidUpdate(prevProps, prevState) {
-    const prevQuery = prevProps.query;
-    const nextQuery = this.props.query;
-    const { page } = this.state;
+  useEffect(() => {
+    if (query) {
+      setStatus(Status.PENDING);
 
-    if (prevQuery !== nextQuery) {
-      this.setState({ status: Status.PENDING });
-
-      getPicturesPixabayApi(nextQuery, page)
-        .then(({ data: { hits } }) =>
-          this.setState({ images: hits, status: Status.RESOLVED }),
-        )
-        .catch(error => this.setState({ error, status: Status.REJECTED }));
-      this.setState({ page: 1 });
+      getPicturesPixabayApi(query, page)
+        .then(({ data: { hits } }) => {
+          setImages(hits);
+          setStatus(Status.RESOLVED);
+          // setPage(1);
+          
+        })
+        .catch(error => {
+          setError(error);
+          setStatus(Status.REJECTED);
+        });
     }
-  }
+    
+  }, [query, page]);
 
-  loadMore = () => {
-    const { page } = this.state;
-
-    getPicturesPixabayApi(this.props.query, page)
-      .then(({ data: { hits } }) => {
-        this.setState(prevState => ({
-          images: [...prevState.images, ...hits],
-          page: prevState.page + 1,
-          status: Status.RESOLVED,
-        }));
-        this.pageScroll();
-      })
-      .catch(error => this.setState({ error, status: Status.REJECTED }));
-  };
-
-  pageScroll() {
+  useEffect(() => {
     window.scrollTo({
       top: document.documentElement.scrollHeight,
       behavior: 'smooth',
     });
-  }
+  }, [images]);
 
-  render() {
-    const { images } = this.state;
-    const { onImageClick } = this.props;
-    const { status } = this.state;
 
-    if (status === Status.IDLE) {
+
+  const loadMore = () => {
+
+    let page = setPage(state => state + 1);
+
+    getPicturesPixabayApi(query, page)
+      .then(({ data: { hits } }) => {
+        setImages(prevState => [...prevState, ...hits]);
+    
+        setStatus(Status.RESOLVED);
+        
+      })
+      .catch(error => {
+          setError(error);
+          setStatus(Status.REJECTED);
+        });
+  };
+
+
+
+  if (status === Status.IDLE) {
       return <h2 className={s.title}>Enter name image</h2>;
-    }
+  };
 
-    if (status === Status.PENDING) {
-      return <Loader />;
-    }
+  if (status === Status.PENDING) {
+    return <Loader />;
+  };
 
-    if (status === Status.REJECTED) {
-      return <h2 className={s.error}>ERROR</h2>;
-    }
+  if (status === Status.REJECTED) {
+    return <h2 className={s.error}>ERROR</h2>;
+  };
 
-    if (status === Status.RESOLVED) {
-      return (
-        <>
-          <ul className={s.imageGallery}>
-            {images.map(({ id, tags, webformatURL, largeImageURL }) => (
-              <ImageGalleryItem
-                key={id}
-                tags={tags}
-                webformatURL={webformatURL}
-                largeImageURL={largeImageURL}
-                onClick={onImageClick}
-              />
-            ))}
-          </ul>
-          <Button loadMore={this.loadMore} />
-        </>
-      );
-    }
-  }
-}
+  if (status === Status.RESOLVED) {
+    return (
+      <>
+        <ul className={s.imageGallery}>
+          {images.map(({ id, tags, webformatURL, largeImageURL }) => (
+            <ImageGalleryItem
+              key={id}
+              tags={tags}
+              webformatURL={webformatURL}
+              largeImageURL={largeImageURL}
+              onClick={onImageClick}
+            />
+          ))}
+        </ul>
+        <Button loadMore={loadMore} />
+      </>
+    );
+  };
+};
+
 
 ImageGallery.propTypes = {
   query: PropTypes.string.isRequired,
@@ -107,4 +109,4 @@ ImageGallery.propTypes = {
   onImageClick: PropTypes.func.isRequired,
 };
 
-export default ImageGallery;
+

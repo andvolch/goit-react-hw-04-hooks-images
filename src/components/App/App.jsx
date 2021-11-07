@@ -11,12 +11,14 @@ import ImageGallery from '../ImageGallery/ImageGallery';
 export default function App() {
   
   const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [tags, seTtags] = useState('');
   const [largeImageURL, setLargeImageURL] = useState('');
 
-   const handleFormSubmit = query => {
-    setQuery(query);
+   const handleFormSubmit = (query, page) => {
+     setQuery(query);
+     setPage(1);
   };
 
   const toggleModal = () => {
@@ -38,6 +40,8 @@ export default function App() {
         />
         <ImageGallery
           query={query}
+        page={page}
+        setPage={setPage}
           onImageClick={onImageClick}
         />
         {showModal && (

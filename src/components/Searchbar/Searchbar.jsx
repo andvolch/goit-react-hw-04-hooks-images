@@ -1,32 +1,32 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 
 import s from './Searchbar.module.css';
 
-class Searchbar extends Component {
-  state = {
-    query: '',
-  };
 
-  handleSubmit = e => {
+export default function Searchbar({ onSubmit }) {
+  
+  const [query, setQuery] = useState('');
+
+  const handleSubmit = e => {
     e.preventDefault();
 
-    if (this.state.query.trim() === '') {
+    if (query.trim() === '') {
       return toast.error('Enter a normal query!');
     }
-    this.props.onSubmit(this.state.query);
-    this.setState({ query: '' });
+    onSubmit(query);
+    setQuery('');
   };
 
-  handlEqueryChange = e => {
-    this.setState({ query: e.target.value.toLowerCase() });
+  const handlEqueryChange = e => {
+    setQuery(e.target.value.toLowerCase());
   };
 
-  render() {
-    return (
+
+  return (
       <header className={s.searchbar}>
-        <form className={s.searchForm} onSubmit={this.handleSubmit}>
+        <form className={s.searchForm} onSubmit={handleSubmit}>
           <button type="submit" className={s.searchForm__button}>
             <span className={s.searchForm__label}>Search images and fotos</span>
           </button>
@@ -34,20 +34,21 @@ class Searchbar extends Component {
             className={s.searchForm__input}
             type="text"
             name="search"
-            value={this.state.query}
+            value={query}
             // autocomplete="off"
             // autofocus
             placeholder="Search images and photos"
-            onChange={this.handlEqueryChange}
+            onChange={handlEqueryChange}
           />
         </form>
       </header>
     );
-  }
-}
+  
+};
+
 
 Searchbar.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
 
-export default Searchbar;
+
