@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import {useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -6,47 +6,51 @@ import Modal from '../Modal/Modal';
 import Searchbar from '../Searchbar/Searchbar';
 import ImageGallery from '../ImageGallery/ImageGallery';
 
-class App extends Component {
-  state = {
-    query: '',
-    showModal: false,
-    tags: '',
-    largeImageURL: '',
+
+
+export default function App() {
+  
+  const [query, setQuery] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [tags, seTtags] = useState('');
+  const [largeImageURL, setLargeImageURL] = useState('');
+
+   const handleFormSubmit = query => {
+    setQuery(query);
   };
 
-  handleFormSubmit = query => {
-    this.setState({ query });
+  const toggleModal = () => {
+    setShowModal(!showModal);
+    
   };
 
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-    }));
+  const onImageClick = (tags, largeImageURL) => {
+    seTtags(tags);
+    setLargeImageURL(largeImageURL);
+
+    toggleModal();
   };
 
-  onImageClick = (tags, largeImageURL) => {
-    this.setState({ tags, largeImageURL });
-    this.toggleModal();
-  };
-
-  render() {
-    const { showModal, tags, largeImageURL, query } = this.state;
-
-    return (
+  return (
       <div>
-        <Searchbar onSubmit={this.handleFormSubmit} />
-        <ImageGallery query={query} onImageClick={this.onImageClick} />
+        <Searchbar
+          onSubmit={handleFormSubmit}
+        />
+        <ImageGallery
+          query={query}
+          onImageClick={onImageClick}
+        />
         {showModal && (
-          <Modal
-            onClose={this.toggleModal}
-            tags={tags}
-            largeImageURL={largeImageURL}
-          />
+            <Modal
+              onClose={toggleModal}
+              tags={tags}
+              largeImageURL={largeImageURL}
+            />
         )}
         <ToastContainer autoClose={5000} />
       </div>
     );
-  }
-}
 
-export default App;
+};
+
+
