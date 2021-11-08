@@ -12,6 +12,7 @@ export default function App() {
   
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
+  const [images, setImages] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [tags, seTtags] = useState('');
   const [largeImageURL, setLargeImageURL] = useState('');
@@ -19,6 +20,7 @@ export default function App() {
    const handleFormSubmit = (query, page) => {
      setQuery(query);
      setPage(1);
+     setImages([]);
   };
 
   const toggleModal = () => {
@@ -46,7 +48,8 @@ export default function App() {
         <ImageGallery
           query={query}
           page={page}
-          setPage={setPage}
+          images={images}
+          setImages={setImages}
           onImageClick={onImageClick}
           loadMore={loadMore}
         />

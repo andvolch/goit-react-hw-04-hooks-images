@@ -16,58 +16,41 @@ const Status = {
   REJECTED: 'rejected',
 };
 
-export default function ImageGallery({ query, page, onImageClick, loadMore }) {
+export default function ImageGallery({ query, page, images, setImages, onImageClick, loadMore }) {
   
-  const [images, setImages] = useState([]);
+  // const [images, setImages] = useState([]);
   
   const [error, setError] = useState(null);
   const [status, setStatus] = useState(Status.IDLE);
 
   useEffect(() => {
-    if (!query) {
-      return
-    }
-    setStatus(Status.PENDING);
+    if (!query) return;
 
-    getPicturesPixabayApi(query, page)
-      .then(({ data: { hits } }) => {
-        setImages(hits);
-        setStatus(Status.RESOLVED);
-        
-      })
-      .catch(error => {
-        setError(error);
-        setStatus(Status.REJECTED);
-      });
-    
-    if (page !== 1) {
       setStatus(Status.PENDING);
       getPicturesPixabayApi(query, page)
       .then(({ data: { hits } }) => {
         setImages(prevState => [...prevState, ...hits]);
-
         setStatus(Status.RESOLVED);
-
-        
-        
+        if (page !== 1) {
+          pageScroll();
+        };
       })
       .catch(error => {
           setError(error);
           setStatus(Status.REJECTED);
         });
-      }
+      
     
-  }, [query, page]);
+  }, [query, page, setImages]);
 
-  useEffect(() => {
-    if(page !==1) {
-      return 
-    };
+
+  const pageScroll = () => {
     window.scrollTo({
       top: document.documentElement.scrollHeight,
       behavior: 'smooth',
     });
-  }, [page]);
+  };
+
 
 
 
@@ -106,7 +89,9 @@ export default function ImageGallery({ query, page, onImageClick, loadMore }) {
 
 ImageGallery.propTypes = {
   query: PropTypes.string.isRequired,
-
+  page: PropTypes.number.isRequired,
+  images: PropTypes.array.isRequired,
+  setImages: PropTypes.func.isRequired,
   onImageClick: PropTypes.func.isRequired,
   loadMore: PropTypes.func.isRequired,
 };
