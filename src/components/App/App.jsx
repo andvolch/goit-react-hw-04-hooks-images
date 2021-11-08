@@ -17,7 +17,7 @@ export default function App() {
   const [tags, seTtags] = useState('');
   const [largeImageURL, setLargeImageURL] = useState('');
 
-   const handleFormSubmit = (query, page) => {
+   const handleFormSubmit = (query) => {
      setQuery(query);
      setPage(1);
      setImages([]);
