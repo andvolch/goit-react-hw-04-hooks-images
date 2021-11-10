@@ -10,15 +10,3 @@
   margin-left: auto;
   margin-right: auto;
 }
-
-.title {
-  color: blue;
-  display: flex;
-  justify-content: center;
-}
-
-.error {
-  color: red;
-  display: flex;
-  justify-content: center;
-}

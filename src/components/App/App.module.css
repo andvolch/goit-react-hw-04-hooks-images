@@ -4,3 +4,15 @@
   grid-gap: 16px;
   padding-bottom: 24px;
 }
+
+.error {
+  color: red;
+  display: flex;
+  justify-content: center;
+}
+
+.title {
+  color: blue;
+  display: flex;
+  justify-content: center;
+}
